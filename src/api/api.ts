@@ -2,6 +2,27 @@ import { ShareGPTSubmitBodyInterface } from '@type/api';
 import { ConfigInterface, MessageInterface, ModelOptions } from '@type/chat';
 import { isAzureEndpoint } from '@utils/api';
 
+
+export const isAuthenticated = async () => {
+  try {
+    const response = await fetch('/.auth/me');
+    if (response.ok) {
+      const data = await response.json();
+      // Check if the user data exists and has necessary properties
+      return data.clientPrincipal != null;
+    }
+    return false;
+  } catch (error) {
+    console.error('Error checking authentication status:', error);
+    return false;
+  }
+}
+
+export const redirectToLogin = async() => {
+  // Redirect to a login route that triggers AAD authentication
+  window.location.href = '/.auth/login/aad';
+}
+
 export const getChatCompletion = async (
   endpoint: string,
   messages: MessageInterface[],
