@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import useStore from '@store/store';
 import i18n from './i18n';
 
@@ -10,7 +10,9 @@ import { ChatInterface } from '@type/chat';
 import { Theme } from '@type/theme';
 // import ApiPopup from '@components/ApiPopup';
 import Toast from '@components/Toast';
-import AuthenticationUpdater from '@components/Authentication/AuthenticationUpdater';
+
+import AuthenticationUpdater from './background-components/AuthenticationUpdater';
+import PageTitleUpdater from './background-components/PageTitleUpdater';
 
 import { ClientPrincipalContextProvider } from "@aaronpowell/react-static-web-apps-auth";
 
@@ -77,13 +79,16 @@ function App() {
     }
   }, []);
 
+  const chatDownloadAreaRef = useRef<HTMLDivElement>(null);
+
   return (
     <div className='overflow-hidden w-full h-full relative'>
       <ClientPrincipalContextProvider>
         <>
           <AuthenticationUpdater />
-          <Menu />
-          <Chat />
+          <PageTitleUpdater />
+          <Menu chatDownloadAreaRef={chatDownloadAreaRef}/>
+          <Chat chatDownloadAreaRef={chatDownloadAreaRef}/>
           {/* <ApiPopup /> */}
           <Toast />
         </>
