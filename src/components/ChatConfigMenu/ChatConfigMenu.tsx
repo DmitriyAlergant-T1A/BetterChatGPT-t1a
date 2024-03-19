@@ -14,6 +14,7 @@ import {
 
 import { ModelOptions } from '@type/chat';
 import { _defaultChatConfig, _defaultSystemMessage } from '@constants/chat';
+import LinkIcon from '@icon/LinkIcon'
 
 const ChatConfigMenu = () => {
   const { t } = useTranslation('model');
@@ -21,10 +22,11 @@ const ChatConfigMenu = () => {
   return (
     <div>
       <button
-        className='btn btn-neutral'
+        className='items-center gap-3 btn btn-neutral'
         onClick={() => setIsModalOpen(true)}
         aria-label={t('defaultChatConfig') as string}
       >
+        <LinkIcon />
         {t('defaultChatConfig')}
       </button>
       {isModalOpen && <ChatConfigPopup setIsModalOpen={setIsModalOpen} />}
@@ -47,7 +49,8 @@ const ChatConfigPopup = ({
     useStore.getState().defaultSystemMessage
   );
   const [_model, _setModel] = useState<ModelOptions>(config.model);
-  const [_maxToken, _setMaxToken] = useState<number>(config.max_tokens);
+  const [_maxPromptTokens, _setMaxPromptToken] = useState<number>(config.maxPromptTokens);
+  const [_maxGenerationTokens, _setMaxGenerationToken] = useState<number>(config.maxGenerationTokens);
   const [_temperature, _setTemperature] = useState<number>(config.temperature);
   const [_topP, _setTopP] = useState<number>(config.top_p);
   const [_presencePenalty, _setPresencePenalty] = useState<number>(
@@ -62,7 +65,8 @@ const ChatConfigPopup = ({
   const handleSave = () => {
     setDefaultChatConfig({
       model: _model,
-      max_tokens: _maxToken,
+      maxPromptTokens: _maxPromptTokens,
+      maxGenerationTokens: _maxGenerationTokens,
       temperature: _temperature,
       top_p: _topP,
       presence_penalty: _presencePenalty,
@@ -74,7 +78,8 @@ const ChatConfigPopup = ({
 
   const handleReset = () => {
     _setModel(_defaultChatConfig.model);
-    _setMaxToken(_defaultChatConfig.max_tokens);
+    _setMaxPromptToken(_defaultChatConfig.maxGenerationTokens);
+    _setMaxGenerationToken(_defaultChatConfig.maxPromptTokens);
     _setTemperature(_defaultChatConfig.temperature);
     _setTopP(_defaultChatConfig.top_p);
     _setPresencePenalty(_defaultChatConfig.presence_penalty);
@@ -95,9 +100,16 @@ const ChatConfigPopup = ({
         />
         <ModelSelector _model={_model} _setModel={_setModel} />
         <MaxTokenSlider
-          _maxToken={_maxToken}
-          _setMaxToken={_setMaxToken}
+          _maxToken={_maxPromptTokens}
+          _setMaxToken={_setMaxPromptToken}
           _model={_model}
+          _translationItem='maxPromptTokens'
+        />
+        <MaxTokenSlider
+          _maxToken={_maxGenerationTokens}
+          _setMaxToken={_setMaxGenerationToken}
+          _model={_model}
+          _translationItem='maxGenerationTokens'
         />
         <TemperatureSlider
           _temperature={_temperature}

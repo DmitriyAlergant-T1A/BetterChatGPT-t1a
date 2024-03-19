@@ -6,7 +6,7 @@ import PlusIcon from '@icon/PlusIcon';
 import useAddChat from '@hooks/useAddChat';
 import PopupModal from '@components/PopupModal'; // Ensure this is correctly imported
 import { ModelOptions } from '@type/chat';
-import { min } from 'lodash';
+import { supportedModels } from '@constants/chat';
 
 const NewChat = ({ folder }: { folder?: string }) => {
   const { t } = useTranslation();
@@ -15,13 +15,24 @@ const NewChat = ({ folder }: { folder?: string }) => {
   const addChat = useAddChat(); 
 
   const handleModelSelect = (model: string) => {
-    console.log(`Model selected: ${model}`);
+    //console.log(`Model selected: ${model}`);
 
     setIsModelSelectionOpen(false); // Close the modal
   
     // Validate or cast the model string to ModelOptions
     addChat(folder, model as ModelOptions); // Cast to ModelOptions if it's valid
   };
+
+  const ModelSelectionButton = ({ model }: { model: ModelOptions }) => 
+  {
+    return (
+    <div className='flex justify-center'>
+      <button className='min-w-btn btn btn-neutral p-4 rounded-lg md:border border-gray-900 dark:border-gray-200' onClick={() => handleModelSelect(model)}>{supportedModels[model].displayName}</button>
+    </div>);
+  }
+
+  const anthropicEnable:string = import.meta.env.VITE_ANTHROPIC_ENABLE || "N";
+  console.log(`Anthropic Enable: ${anthropicEnable}`)
 
   return (
     <>
@@ -45,6 +56,7 @@ const NewChat = ({ folder }: { folder?: string }) => {
           </>
         )}
       </a>
+
       {isModelSelectionOpen && (
         <PopupModal
           title="New Chat: Select Model"
@@ -64,35 +76,59 @@ const NewChat = ({ folder }: { folder?: string }) => {
             </style>
             <table className='w-full text-center text-gray-700 dark:text-gray-300' style={{ tableLayout: 'fixed' }}>
                 <tbody>
+                <tr><td className='pt-2 text-lg' colSpan={3}><b>OpenAI GPT: Iconic Large Language Models that started it all</b></td></tr>
                 <tr>
                     <td style={{ paddingTop: '20px' }}>
-                       <div className='flex justify-center'>
-                         <button className='min-w-btn btn btn-neutral p-4 rounded-lg' onClick={() => handleModelSelect('gpt-3.5-turbo')}>GPT-3.5</button>
-                       </div>
-                      </td>
-                    <td style={{ paddingTop: '20px' }}>
-                      <div className='flex justify-center'>
-                        <button className='min-w-btn btn btn-neutral p-4 rounded-lg' onClick={() => handleModelSelect('gpt-4')}>GPT-4</button>
-                      </div>
+                      <ModelSelectionButton model='gpt-3.5-turbo'/>
                     </td>
                     <td style={{ paddingTop: '20px' }}>
-                      <div className='flex justify-center'>
-                        <button className='min-w-btn btn btn-neutral p-4 rounded-lg' onClick={() => handleModelSelect('gpt-4-turbo-preview')}>GPT-4 Turbo</button>
-                      </div>
+                      <ModelSelectionButton model='gpt-4'/>
                     </td>
+                    <td style={{ paddingTop: '20px' }}>
+                      <ModelSelectionButton model='gpt-4-turbo-preview'/>
+                    </td>                    
                 </tr>
                 <tr style={{ paddingTop: '20px', paddingBottom: '20px' }}>
-                    <td style={{ paddingTop: '20px' }}>Reliable for general use<br/>16K tokens context<br/></td>
-                    <td style={{ paddingTop: '20px' }}>Advanced, more nuanced<br/>8K tokens context<br/></td>
-                    <td style={{ paddingTop: '20px' }}>Latest version of GPT-4 <br/>up to 128K tokens context</td>
+                    <td style={{ paddingTop: '10px' }}>Same as "free" ChatGPT.com<br/>OK for general use</td>
+                    <td style={{ paddingTop: '10px' }}>Advanced, more nuanced<br/>OpenAI's strongest model<br/></td>
+                    <td style={{ paddingTop: '10px' }}>Nearly as good as GPT-4 <br/>Context up to 128K tokens</td>
                 </tr>
                 <tr style={{ paddingTop: '20px', paddingBottom: '20px', verticalAlign: 'top'}}>
-                    <td style={{ paddingTop: '20px' }}>Cost: Very Cheap<br/>(baseline)<br/></td>
-                    <td style={{ paddingTop: '20px' }}>Cost: <b>120x</b> of GPT-3.5<br/>per input/output token</td>
-                    <td style={{ paddingTop: '20px' }}>Cost: <b>60x</b> of GPT-3.5<br/>per input/output token<br/><br/><span className='dark:text-red-400 text-red-700'>Warning: large model context<br/>quickly becomes expensive<br/>with each message added.</span></td>
+                    <td style={{ paddingTop: '10px' }}>Very Cheap <b>(baseline)</b><br/>per input/output token</td>
+                    <td style={{ paddingTop: '10px' }}>Cost: <b>40-60x</b> of GPT-3.5<br/>per input/output token</td>
+                    <td style={{ paddingTop: '10px' }}>Cost: <b>20x</b> of GPT-3.5<br/>per input/output token</td>
                 </tr>
+                <tr><td className='pt-6 text-lg' colSpan={3}></td></tr>
+                {(anthropicEnable=='Y') && (
+                  <>
+                    <tr><td className='pt-2 text-lg border-t' colSpan={3}><b>Anthropic Claude 3: newest models by Anthropic, a strong OpenAI rival</b></td></tr>
+                    <tr><td className='' colSpan={3}>See <a className="text-blue-600 hover:text-blue-800 visited:text-purple-800" href="https://www.anthropic.com/news/claude-3-family">https://www.anthropic.com/news/claude-3-family</a></td></tr>
+                    <tr>
+                        <td style={{ paddingTop: '20px' }}>
+                          <ModelSelectionButton model='claude-3-haiku'/>
+                        </td>
+                        <td style={{ paddingTop: '20px' }}>
+                          <ModelSelectionButton model='claude-3-opus'/>
+                        </td>  
+                        <td style={{ paddingTop: '20px' }}>
+                          <ModelSelectionButton model='claude-3-sonnet'/>
+                        </td>
+                    </tr>
+                    <tr style={{ paddingTop: '20px', paddingBottom: '20px' }}>
+                        <td style={{ paddingTop: '10px' }}>Anthropic's fast&cheap model<br/>Much better then GPT-3.5<br/>Context up to 200K tokens</td>
+                        <td style={{ paddingTop: '10px' }}>Anthropic's strongest model <br/>Beats all GPT-4 benchmarks<br/>Context up to 200K tokens</td>
+                        <td style={{ paddingTop: '10px' }}>Very strong mid-range model<br/>Comparable with GPT-4<br/>Context up to 200K tokens</td>
+                    </tr>
+                    <tr style={{ paddingTop: '20px', paddingBottom: '20px', verticalAlign: 'top'}}>
+                        <td style={{ paddingTop: '10px' }}>Cost: <b>60-80%</b> of GPT-3.5<br/><b>(cheaper!)</b></td>
+                        <td style={{ paddingTop: '10px' }}>Cost: <b>~50x</b> of GPT-3.5<br/>per input/output token</td>
+                        <td style={{ paddingTop: '10px' }}>Cost: <b>~8x</b> of GPT-3.5<br/>per input/output token</td>
+                    </tr>
+                  </>
+                )}
                 </tbody>
             </table>
+            
           </>
         </PopupModal>
       )}

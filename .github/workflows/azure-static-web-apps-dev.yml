@@ -3,17 +3,12 @@ name: Azure Static Web Apps CI/CD
 on:
   push:
     branches:
-      - main
       - dev
-  pull_request:
-    types: [opened, synchronize, reopened, closed]
-    branches:
-      - main
 
 jobs:
   build_and_deploy_job:
-    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed')
     runs-on: ubuntu-latest
+    environment: dev
     name: Build and Deploy Job
     steps:
       - uses: actions/checkout@v3
@@ -37,7 +32,7 @@ jobs:
           ###### End of Repository/Build Configurations ######
         env:
           VITE_COMPANY_NAME: ${{ vars.VITE_COMPANY_NAME }} # This line passes the secret to the build process
-          VITE_SUPPORT_CONTACT: ${{ vars.VITE_SUPPORT_CONTACT }}
+          VITE_ANTHROPIC_ENABLE: ${{ vars.VITE_ANTHROPIC_ENABLE }}
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
     runs-on: ubuntu-latest
@@ -49,3 +44,5 @@ jobs:
         with:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
           action: "close"
+
+          

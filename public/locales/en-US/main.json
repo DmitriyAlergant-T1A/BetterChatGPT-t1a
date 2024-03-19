@@ -1,6 +1,4 @@
 {
-  "save": "Add",
-  "generate": "Generate",
   "cancel": "Cancel",
   "confirm": "Confirm",
   "warning": "Warning",
@@ -11,7 +9,7 @@
   "export": "Export",
   "author": "Made by Jing Hua",
   "about": "About",
-  "api": "API",
+  "apiSettings": "API Settings",
   "personal": "Personal",
   "free": "Free",
   "downloadChat": "Download Chat",
@@ -44,7 +42,7 @@
   },
   "newFolder": "New Folder",
   "cloneChat": "Clone Chat",
-  "cloned": "Cloned",
+  "cloned": "Chat Cloned",
   "submitPlaceholder": "Type a message...",
   "logout": "Logout",
   "accumulatedCost": "Accumulated Cost"

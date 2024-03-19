@@ -9,10 +9,6 @@ import NewMessageButton from './Message/NewMessageButton';
 import CrossIcon from '@icon/CrossIcon';
 
 import useSubmit from '@hooks/useSubmit';
-import DownloadChat from './DownloadChat';
-import CloneChat from './CloneChat';
-
-import { isMobile } from 'react-device-detect';
 
 import StopGeneratingButton from '@components/StopGeneratingButton/StopGeneratingButton';
 import TokensToast from '@components/Toast/TokensToast';
@@ -55,6 +51,7 @@ const ChatContent = ({ chatDownloadAreaRef }: ChatContentProps) =>  {
 
   return (
     <div className='flex-1 overflow-hidden'>
+      <ChatTitle />
       <ScrollToBottom
         className='h-full dark:bg-gray-800'
         followButtonClassName='hidden'
@@ -65,7 +62,7 @@ const ChatContent = ({ chatDownloadAreaRef }: ChatContentProps) =>  {
             className='flex flex-col items-center text-sm dark:bg-gray-800 w-full'
             ref={chatDownloadAreaRef}
           >
-            {<ChatTitle />}
+            {/* {<ChatTitle />} */}
             {!generating && advancedMode && messages?.length === 0 && (
               <NewMessageButton messageIndex={-1} />
             )}
@@ -113,33 +110,27 @@ const ChatContent = ({ chatDownloadAreaRef }: ChatContentProps) =>  {
           >
 
         {/* right-0  md:w-full*/}
-
-              <div className='absolute bottom-6 left-8 m-auto flex min-w-[12em] gap-0 md:gap-2 justify-left'>
+          </div>
+          <div className='w-full h-36'></div>
+        </div>
+      </ScrollToBottom>
+      <div className='absolute bottom-6 left-8 m-auto flex min-w-[12em] gap-0 md:gap-2 justify-left'>
                 {
                   <>
-                    { 
-                      !isMobile && (
-                          <>
-                            <CloneChat /> 
-                          </>
-                      )
-                    }
                     {useStore.getState().generating ?
                       (
                         <StopGeneratingButton />
                       )
                       :
                       (
-                        <TokensToast />
+                        <>
+                          <TokensToast />
+                        </>
                       )
                     }
                   </>
                 }
               </div>
-          </div>
-          <div className='w-full h-36'></div>
-        </div>
-      </ScrollToBottom>
     </div>
   );
 };

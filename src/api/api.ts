@@ -1,7 +1,7 @@
 import { ShareGPTSubmitBodyInterface } from '@type/api';
 import { ConfigInterface, MessageInterface, ModelOptions } from '@type/chat';
-import { isAzureEndpoint } from '@utils/api';
-
+import { supportedModels } from '@constants/chat';
+import { OpenAICompletionsConfig } from '@hooks/useSubmit';
 
 export const isAuthenticated = async () => {
   try {
@@ -23,30 +23,26 @@ export const redirectToLogin = async() => {
   window.location.href = '/.auth/login/aad';
 }
 
+
 export const getChatCompletion = async (
   endpoint: string,
   messages: MessageInterface[],
-  config: ConfigInterface,
-  apiKey?: string,
+  config: OpenAICompletionsConfig,
   customHeaders?: Record<string, string>
 ) => {
+
   const headers: HeadersInit = {
     'Content-Type': 'application/json',
     ...customHeaders,
   };
-  if (apiKey) headers.Authorization = `Bearer ${apiKey}`;
 
-  if (isAzureEndpoint(endpoint) && apiKey) {
-    headers['api-key'] = apiKey;
+  const path = `chat/completions`;
 
-    const path = `chat/completions`;
-
-    if (!endpoint.endsWith(path)) {
-      if (!endpoint.endsWith('/')) {
-        endpoint += '/';
-      }
-      endpoint += path;
+  if (!endpoint.endsWith(path)) {
+    if (!endpoint.endsWith('/')) {
+      endpoint += '/';
     }
+    endpoint += path;
   }
 
   const response = await fetch(endpoint, {
@@ -54,8 +50,7 @@ export const getChatCompletion = async (
     headers,
     body: JSON.stringify({
       messages,
-      ...config,
-      max_tokens: undefined,
+      ...config
     }),
   });
   if (!response.ok) throw new Error(await response.text());
@@ -67,20 +62,16 @@ export const getChatCompletion = async (
 export const getChatCompletionStream = async (
   endpoint: string,
   messages: MessageInterface[],
-  config: ConfigInterface,
-  apiKey?: string,
+  config: OpenAICompletionsConfig,
   customHeaders?: Record<string, string>
 ) => {
+
   const headers: HeadersInit = {
     'Content-Type': 'application/json',
     ...customHeaders,
   };
-  if (apiKey) headers.Authorization = `Bearer ${apiKey}`;
 
-  if (isAzureEndpoint(endpoint) && apiKey) {
-    headers['api-key'] = apiKey;
-
-    const path = `chat/completions`;
+  const path = `chat/completions`;
 
     if (!endpoint.endsWith(path)) {
       if (!endpoint.endsWith('/')) {
@@ -88,7 +79,6 @@ export const getChatCompletionStream = async (
       }
       endpoint += path;
     }
-  }
 
   const response = await fetch(endpoint, {
     method: 'POST',
@@ -96,10 +86,10 @@ export const getChatCompletionStream = async (
     body: JSON.stringify({
       messages,
       ...config,
-      max_tokens: undefined,
       stream: true,
     }),
   });
+
   if (response.status === 404 || response.status === 405) {
     const text = await response.text();
 
