@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import useStore from '@store/store';
 
 import { supportedModels } from '@constants/chat';
-import Toggle from '@components/Toggle/Toggle';
+import Toggle from '@components/Menu/Toggle/Toggle';
 
 import { ModelOptions, TotalTokenUsed } from '@type/chat';
 
@@ -24,7 +24,7 @@ const tokenCostToCost = (
   return completionCost + promptCost;
 };
 
-const TotalTokenCost = () => {
+const TokensTotalCost = () => {
   const { t } = useTranslation(['main', 'model']);
 
   const totalTokenUsed = useStore((state) => state.totalTokenUsed);
@@ -72,7 +72,7 @@ const TotalTokenCost = () => {
               <td className='px-4 py-2'>
                ${costMapping
                   .reduce((prev, curr) => prev + curr.cost, 0)
-                  .toPrecision(2)}
+                  .toFixed(2)}
               </td>
             </tr>
           </tbody>
@@ -133,4 +133,4 @@ export const TotalTokenCostDisplay = () => {
   );
 };
 
-export default TotalTokenCost;
+export default TokensTotalCost;

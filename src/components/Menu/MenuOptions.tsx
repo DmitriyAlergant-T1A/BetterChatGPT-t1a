@@ -1,10 +1,10 @@
 import useStore from '@store/store';
 
-import AboutMenu from '@components/AboutMenu';
-import ImportExportChat from '@components/ImportExportChat';
-import SettingsMenu from '@components/SettingsMenu';
+import AboutMenu from '@components/Menu/AboutMenu';
+import ImportExportChat from '@components/Chat/ImportExportChat';
+import SettingsMenu from '@components/Menu/SettingsMenu';
 import CollapseOptions from './CollapseOptions';
-import TokensCostMenu from './TokensCostMenu'
+import TokensCostModal from './TokensCostModal'
 import AuthenticatedUserLogout from './AuthenticatedUserLogout';
 
 const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || undefined;
@@ -14,13 +14,13 @@ const MenuOptions = () => {
   const countTotalTokens = useStore((state) => state.countTotalTokens);
   return (
     <>
-      <CollapseOptions />
+      {/* <CollapseOptions /> */}
       <div
         className={`${
           hideMenuOptions ? 'max-h-0' : 'max-h-full'
         } overflow-hidden transition-all`}
       >
-        {countTotalTokens && <TokensCostMenu />}
+        {countTotalTokens && <TokensCostModal />}
         <SettingsMenu />
         <AboutMenu />
         <AuthenticatedUserLogout />

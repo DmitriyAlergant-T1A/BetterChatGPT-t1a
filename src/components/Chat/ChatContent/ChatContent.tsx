@@ -3,14 +3,14 @@ import ScrollToBottom from 'react-scroll-to-bottom';
 import useStore from '@store/store';
 
 import ScrollToBottomButton from './ScrollToBottomButton';
-import ChatTitle from './ChatTitle';
+import ChatHeader from './ChatHeader';
 import Message from './Message';
 import NewMessageButton from './Message/NewMessageButton';
 import CrossIcon from '@icon/CrossIcon';
 
 import useSubmit from '@hooks/useSubmit';
 
-import StopGeneratingButton from '@components/StopGeneratingButton/StopGeneratingButton';
+import StopGeneratingButton from '@components/Chat/StopGeneratingButton/StopGeneratingButton';
 import TokensToast from '@components/Toast/TokensToast';
 
 interface ChatContentProps {
@@ -20,6 +20,13 @@ interface ChatContentProps {
 const ChatContent = ({ chatDownloadAreaRef }: ChatContentProps) =>  {
   const inputRole = useStore((state) => state.inputRole);
   const setError = useStore((state) => state.setError);
+
+  const chatExists =  useStore((state) =>
+    state.chats &&
+    state.chats.length > 0 &&
+    state.currentChatIndex >= 0 &&
+    state.currentChatIndex < state.chats.length
+  );
   const messages = useStore((state) =>
     state.chats &&
     state.chats.length > 0 &&
@@ -51,7 +58,7 @@ const ChatContent = ({ chatDownloadAreaRef }: ChatContentProps) =>  {
 
   return (
     <div className='flex-1 overflow-hidden'>
-      <ChatTitle />
+      <ChatHeader />
       <ScrollToBottom
         className='h-full dark:bg-gray-800'
         followButtonClassName='hidden'
@@ -62,30 +69,41 @@ const ChatContent = ({ chatDownloadAreaRef }: ChatContentProps) =>  {
             className='flex flex-col items-center text-sm dark:bg-gray-800 w-full'
             ref={chatDownloadAreaRef}
           >
-            {/* {<ChatTitle />} */}
-            {!generating && advancedMode && messages?.length === 0 && (
+            {/* {<ChatHeader />} */}
+            
+            {/* "Plus" New Message Button to insert messages in the middle of the thread 
+              {!generating && advancedMode && messages?.length === 0 && (
               <NewMessageButton messageIndex={-1} />
-            )}
+            )} */}
             {messages?.map((message, index) => (
               (advancedMode || index !== 0 || message.role !== 'system') && (
                 <React.Fragment key={index}>
                   <Message
                     role={message.role}
+                    model={message.model} //Only applicable to Assistant: Which model generated the message;
                     content={message.content}
                     messageIndex={index}
                   />
-                  {!generating && advancedMode && <NewMessageButton messageIndex={index} />}
+                  {/* "Plus" New Message Button to insert messages in the middle of the thread 
+                    {!generating && advancedMode && <NewMessageButton messageIndex={index} />} */}
                 </React.Fragment>
               )
             ))}
           </div>
 
-          <Message
-            role={inputRole}
-            content=''
-            messageIndex={stickyIndex}
-            sticky
-          />
+          {chatExists && (
+            <Message
+              role={inputRole}
+              content=''
+              model={undefined}
+              messageIndex={stickyIndex}
+              sticky
+            />)}
+         
+          {!chatExists && (
+            <div className="relative flex mt-10 text-xl text-gray-600 dark:text-gray-300 break-words">You have no active chats. Please use the the New Chat button.</div>
+            )}
+
           {error !== '' && (
             <div className='relative py-2 px-3 w-3/5 mt-3 max-md:w-11/12 border rounded-md border-red-500 bg-red-500/10'>
               <div className='text-gray-600 dark:text-gray-100 text-sm whitespace-pre-wrap'>
@@ -114,6 +132,7 @@ const ChatContent = ({ chatDownloadAreaRef }: ChatContentProps) =>  {
           <div className='w-full h-36'></div>
         </div>
       </ScrollToBottom>
+
       <div className='absolute bottom-6 left-8 m-auto flex min-w-[12em] gap-0 md:gap-2 justify-left'>
                 {
                   <>

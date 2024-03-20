@@ -1,5 +1,5 @@
 // NewChat.tsx
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import useStore from '@store/store';
 import PlusIcon from '@icon/PlusIcon';
@@ -14,6 +14,8 @@ const NewChat = ({ folder }: { folder?: string }) => {
   const [isModelSelectionOpen, setIsModelSelectionOpen] = useState(false);
   const addChat = useAddChat(); 
 
+  const defaultModel = useStore((state) => state.defaultChatConfig.model);
+
   const handleModelSelect = (model: string) => {
     //console.log(`Model selected: ${model}`);
 
@@ -22,6 +24,35 @@ const NewChat = ({ folder }: { folder?: string }) => {
     // Validate or cast the model string to ModelOptions
     addChat(folder, model as ModelOptions); // Cast to ModelOptions if it's valid
   };
+
+  // Function to handle Enter key press
+  const handleEnterKeyPress = (event: KeyboardEvent) => {
+
+    //Use default model; Close ,modal;
+    if (event.key === 'Enter' && isModelSelectionOpen) {
+      handleModelSelect(defaultModel);
+      event.preventDefault();
+    }
+
+    //Show New Chat modal
+    if (event.altKey && event.key === 'Enter' && !isModelSelectionOpen && !generating) {
+      setIsModelSelectionOpen(true);
+    }
+  };
+
+  useEffect(() => {
+    // Add event listener for keydown
+
+    if (!folder)  //Only handle for the main "New Chat" button not additional ones under Folders
+      window.addEventListener('keydown', handleEnterKeyPress);
+
+    // Cleanup function to remove event listener
+    return () => {
+      if (!folder)
+        window.removeEventListener('keydown', handleEnterKeyPress);
+    };
+  }, [generating, isModelSelectionOpen, defaultModel]); // Add dependencies here
+
 
   const ModelSelectionButton = ({ model }: { model: ModelOptions }) => 
   {
@@ -43,7 +74,7 @@ const NewChat = ({ folder }: { folder?: string }) => {
         onClick={() => {
           if (!generating) setIsModelSelectionOpen(true);
         }}
-        title={folder ? String(t('newChat')) : ''}
+        title={folder ? String(t('newChat')) : 'Hotkey: Alt+Enter'}
       >
         {folder ? (
           <div className='max-h-0 parent-sibling-hover:max-h-10 hover:max-h-10 parent-sibling-hover:py-2 hover:py-2 px-2 overflow-hidden transition-all duration-200 delay-500 text-sm flex gap-3 items-center text-gray-100'>
@@ -102,7 +133,8 @@ const NewChat = ({ folder }: { folder?: string }) => {
                 {(anthropicEnable=='Y') && (
                   <>
                     <tr><td className='pt-2 text-lg border-t' colSpan={3}><b>Anthropic Claude 3: newest models by Anthropic, a strong OpenAI rival</b></td></tr>
-                    <tr><td className='' colSpan={3}>See <a className="text-blue-600 hover:text-blue-800 visited:text-purple-800" href="https://www.anthropic.com/news/claude-3-family">https://www.anthropic.com/news/claude-3-family</a></td></tr>
+                    <tr><td className='' colSpan={3}>See <a className={`text-indigo-700 hover:text-indigo-500 visited:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300 dark:visited:text-indigo-400`} 
+                        href="https://www.anthropic.com/news/claude-3-family">https://www.anthropic.com/news/claude-3-family</a></td></tr>
                     <tr>
                         <td style={{ paddingTop: '20px' }}>
                           <ModelSelectionButton model='claude-3-haiku'/>

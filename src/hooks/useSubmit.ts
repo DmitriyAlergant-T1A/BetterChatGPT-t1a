@@ -61,7 +61,7 @@ const useSubmit = () => {
     if (apiEndpoint === builtinAPIEndpoint)
     {
       const isAuthenticatedUser = await isAuthenticated();
-      
+
       if (!isAuthenticatedUser) {
         console.log("User not authenticated, redirecting to login.");
         await redirectToLogin();
@@ -120,6 +120,7 @@ const useSubmit = () => {
     updatedChats[currentChatIndex].messages.push({
       role: 'assistant',
       content: '',
+      model: updatedChats[currentChatIndex].config.model
     });
 
     setChats(updatedChats);

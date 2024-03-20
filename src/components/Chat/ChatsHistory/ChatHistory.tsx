@@ -8,7 +8,7 @@ import DeleteIcon from '@icon/DeleteIcon';
 import EditIcon from '@icon/EditIcon';
 import TickIcon from '@icon/TickIcon';
 import useStore from '@store/store';
-import DownloadChat from '@components/Chat/ChatContent/DownloadChat';
+import DownloadChat from '@components/Chat/ChatsHistory/DownloadChat';
 
 const ChatHistoryClass = {
   normal:
@@ -48,12 +48,16 @@ const ChatHistory = React.memo(
         JSON.stringify(useStore.getState().chats)
       );
       updatedChats.splice(chatIndex, 1);
-      if (updatedChats.length > 0) {
-        setCurrentChatIndex(0);
-        setChats(updatedChats);
-      } else {
-        initialiseNewChat();
-      }
+      // if (updatedChats.length > 0) {
+      //   setCurrentChatIndex(0);
+      //   setChats(updatedChats);
+      // } else {
+      //   initialiseNewChat();
+      // }
+
+      //Now it's ok to have no chats
+      setChats(updatedChats);
+
       setIsDelete(false);
     };
 
