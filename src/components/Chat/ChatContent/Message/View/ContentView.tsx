@@ -35,6 +35,7 @@ import CodeBlock from '../CodeBlock';
 import LikeButton from './Button/LikeButton';
 
 import { useTranslation } from 'react-i18next';
+import useValidatePreSubmit from '@hooks/useValidatePreSubmit';
 
 const ContentView = memo(
   ({
@@ -60,7 +61,11 @@ const ContentView = memo(
     const inlineLatex = useStore((state) => state.inlineLatex);
     const markdownMode = useStore((state) => state.markdownMode);
 
+    const generatingState = useStore((state) => state.generating);
+
     const { t } = useTranslation();
+
+    const { validateMessages } = useValidatePreSubmit();
 
     const handleDelete = () => {
       const updatedChats: ChatInterface[] = JSON.parse(
@@ -82,29 +87,29 @@ const ContentView = memo(
       }
     };
 
-    const handleMove = (direction: 'up' | 'down') => {
-      const updatedChats: ChatInterface[] = JSON.parse(
-        JSON.stringify(useStore.getState().chats)
-      );
-      const updatedMessages = updatedChats[currentChatIndex].messages;
-      const temp = updatedMessages[messageIndex];
-      if (direction === 'up') {
-        updatedMessages[messageIndex] = updatedMessages[messageIndex - 1];
-        updatedMessages[messageIndex - 1] = temp;
-      } else {
-        updatedMessages[messageIndex] = updatedMessages[messageIndex + 1];
-        updatedMessages[messageIndex + 1] = temp;
-      }
-      setChats(updatedChats);
-    };
+    // const handleMove = (direction: 'up' | 'down') => {
+    //   const updatedChats: ChatInterface[] = JSON.parse(
+    //     JSON.stringify(useStore.getState().chats)
+    //   );
+    //   const updatedMessages = updatedChats[currentChatIndex].messages;
+    //   const temp = updatedMessages[messageIndex];
+    //   if (direction === 'up') {
+    //     updatedMessages[messageIndex] = updatedMessages[messageIndex - 1];
+    //     updatedMessages[messageIndex - 1] = temp;
+    //   } else {
+    //     updatedMessages[messageIndex] = updatedMessages[messageIndex + 1];
+    //     updatedMessages[messageIndex + 1] = temp;
+    //   }
+    //   setChats(updatedChats);
+    // };
 
-    const handleMoveUp = () => {
-      handleMove('up');
-    };
+    // const handleMoveUp = () => {
+    //   handleMove('up');
+    // };
 
-    const handleMoveDown = () => {
-      handleMove('down');
-    };
+    // const handleMoveDown = () => {
+    //   handleMove('down');
+    // };
 
     const handleRefresh = () => {
       const updatedChats: ChatInterface[] = JSON.parse(
@@ -112,6 +117,10 @@ const ContentView = memo(
       );
       const updatedMessages = updatedChats[currentChatIndex].messages;
       updatedMessages.splice(updatedMessages.length - 1, 1);
+
+      // Validate the messages for submission (mainly for checking token limits etc)
+      if (validateMessages(updatedMessages) === false) return;
+
       setChats(updatedChats);
       handleSubmit();
     };
@@ -154,12 +163,12 @@ const ContentView = memo(
           )}
         </div>
         <div className='flex justify-end gap-2 w-full mt-2'>
-          {isDelete || (
+          {!isDelete && (
             <>
-              {!useStore.getState().generating &&
+              {!generatingState &&
                 role === 'assistant' &&
                 messageIndex === lastMessageIndex && (
-                  <RefreshButton onClick={handleRefresh} />
+                   <RefreshButton onClick={handleRefresh} />
                 )}
               {messageIndex !== 1 && 
                 <>

@@ -17,6 +17,7 @@ export interface ChatInterface {
   messages: MessageInterface[];
   config: ConfigInterface;
   titleSet: boolean;
+  newMessageDraft?: string;
 }
 
 export interface ConfigInterface {
@@ -60,8 +61,10 @@ export type ModelOptions =
   | 'claude-3-opus';
 
 export interface ModelDetails {
-  maxModelTokens: number;
+  maxModelInputTokens: number;
+  maxModelCompletionTokens: number;
   displayName: string;
+  enabled: boolean;
   apiAliasCurrent: string;
   portkeyProvider: string;
   titleGenModel: ModelOptions;  
